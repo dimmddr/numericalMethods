@@ -13,38 +13,78 @@ def x_j( j, a, b, m ):
 def derivative_f(x):
 	return x / (sqrt(x * x + 1)) + 1
 	
-#красиво печатаем двумерный список
+def derivative_f_2(x):
+	sqroot = sqrt(x * x + 1)
+	return (sqroot - x * x / sqroot) / (sqroot * sqroot)
+	
+#РєСЂР°СЃРёРІРѕ РїРµС‡Р°С‚Р°РµРј РґРІСѓРјРµСЂРЅС‹Р№ СЃРїРёСЃРѕРє
 def print_table(n, table):
 	for i in range(n):
 		print str(table[i])
 	
-#просим ввести n
+#РїСЂРѕСЃРёРј РІРІРµСЃС‚Рё n
 def get_n(m):
-	print "Введите n: ".decode( 'utf8' )
+	print "Р’РІРµРґРёС‚Рµ n: ".decode( 'utf8' )
 	n = int( raw_input() )
 
 	while(n <= 0 or n >= m):
-		print "n должно быть > 0 и меньше m = {}".format(m).decode('utf8')
-		print "Введите n: ".decode( 'utf8' )
+		print "n РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ > 0 Рё РјРµРЅСЊС€Рµ m = {}".format(m).decode('utf8')
+		print "Р’РІРµРґРёС‚Рµ n: ".decode( 'utf8' )
 		n = int( raw_input() )
 	return n
 
-#читаем параметры
+#С‡РёС‚Р°РµРј РїР°СЂР°РјРµС‚СЂС‹
 input = open( '4_task_input.txt', 'r' )
 
 args = {line.split( ' = ' )[ 0 ]: float( line.split( ' = ' )[ 1 ].rstrip( '\n\r' ) ) for line in input}
 for key in args.keys(  ): print( str( key ) + ' = ' + str( args[ key ] ) )
 print
 
-#строим таблицу | x | f(x) |
+#СЃС‚СЂРѕРёРј С‚Р°Р±Р»РёС†Сѓ | x | f(x) |
 table = {x_j( x, args[ 'a' ], args[ 'b' ], args[ 'm' ] ): f( x_j( x, args[ 'a' ], args[ 'b' ], args[ 'm' ] ) ) for x in range( int( args[ 'm' ] ) + 1 )}
 index = sorted( table.keys(  ) )
 for key in index: print( str( key ) + ' => ' + str( table[ key ] ) )
 print
 
-#переводим m из float в integer
+#РїРµСЂРµРІРѕРґРёРј m РёР· float РІ integer
 args['m'] = int(args['m'])
-#считываем n
+#СЃС‡РёС‚С‹РІР°РµРј n
 args[ 'n' ] = get_n(args['m'])
 
-#так как данная функция строго монотонна и непрерывна, то можно использовать первый способ обратной интерполяции
+#С‚Р°Рє РєР°Рє РґР°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃС‚СЂРѕРіРѕ РјРѕРЅРѕС‚РѕРЅРЅР° Рё РЅРµРїСЂРµСЂС‹РІРЅР°, С‚Рѕ РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїРµСЂРІС‹Р№ СЃРїРѕСЃРѕР± РѕР±СЂР°С‚РЅРѕР№ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё
+#РёРЅРІРµСЂС‚РёСЂСѓРµРј С‚Р°Р±Р»РёС†Сѓ
+inv_table = { val : key for key, val in table.items() }
+inv_index = sorted( inv_table.keys() )
+#РІС‹РІРѕРґРёРј РёРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅСѓСЋ С‚Р°Р±Р»РёС‡РєСѓ
+for key in inv_index: print( str( key ) + ' => ' + str( inv_table[ key ] ) )
+print
+#РїСЂРѕСЃРёРј РІРІРµСЃС‚Рё С…
+print "Р’РІРµРґРёС‚Рµ С… РІ РёРЅС‚РµСЂРІР°Р»Рµ [{}, {}]".format( inv_index[0], inv_index[-1] ).decode( 'utf8' )
+x = float( raw_input() )
+
+while(x < inv_index[0]  or x >  inv_index[-1] ):
+	print "x РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ >= {} Рё <= {}".format( inv_table[ inv_index[0] ], inv_table[ inv_index[-1] ]).decode('utf8')
+	print "Р’РІРµРґРёС‚Рµ x: ".decode( 'utf8' )
+	x = float( raw_input() )
+args[ 'x' ] = x
+
+#СЃС‡РёС‚Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚ СЃ РїРѕРјРѕС‰СЊСЋ РјРµС‚РѕРґР° РќСЊСЋС‚РѕРЅР°
+dd = [ [ inv_table[ inv_index[ x ] ] ] for x in range( int( args[ 'n' ] + 1 ) ) ]
+n = args[ 'n' ]
+for j in range( args[ 'n' ] ):
+	for i in range( n ):
+		dd[ i ].append( ( dd[ i + 1 ][ j ] - dd[ i ][ j ] ) / ( inv_index[ i + j + 1] - inv_index[ i ] ) )
+	n -= 1
+
+newton = 0
+mult = 1
+for i in range( args[ 'n' ] + 1 ):
+	newton += mult * dd[ 0 ][ i ]
+	mult *= args[ 'x' ] - inv_index[ i ]
+
+#РІС‹РІРѕРґРёРј СЂРµР·СѓР»СЊС‚Р°С‚
+print "РќР°С…РѕР¶РґРµРЅРёРµ С… = {} СЃ РїРѕРјРѕС‰СЊСЋ РёРЅС‚eСЂРїРѕР»СЏС†РёРё РїРѕ РќСЊСЋС‚РѕРЅСѓ: ".format( args[ 'x' ] ).decode( 'utf8' )
+print "Pn({}) = {}".format( args[ 'x' ], newton )
+print "| f(x) - F | = " + str( abs( f(newton) - args[ 'x' ] ) )
+
+#СЃС‡РёС‚Р°РµРј РїСЂРѕРёР·РІРѕРґРЅСѓСЋ
