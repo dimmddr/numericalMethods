@@ -14,8 +14,8 @@ def derivative_f(x):
 	return x / (sqrt(x * x + 1)) + 1
 	
 def derivative_f_2(x):
-	sqroot = sqrt(x * x + 1)
-	return (sqroot - x * x / sqroot) / (sqroot * sqroot)
+	tmp = x * x + 1
+	return 1 / sqrt(tmp * tmp * tmp)
 	
 #красиво печатаем двумерный список
 def print_table(n, table):
@@ -86,5 +86,21 @@ for i in range( args[ 'n' ] + 1 ):
 print "Нахождение х = {} с помощью интeрполяции по Ньютону: ".format( args[ 'x' ] ).decode( 'utf8' )
 print "Pn({}) = {}".format( args[ 'x' ], newton )
 print "| f(x) - F | = " + str( abs( f(newton) - args[ 'x' ] ) )
+print
 
 #считаем производную
+h = (args['b'] - args['a']) / args['m']
+deriv = []
+deriv_2 = []
+deriv.append((-3 * table[index[0]] + 4 * table[index[1]] - table[index[2]]) / (2 * h))
+deriv.append((-3 * table[index[1]] + 4 * table[index[2]] - table[index[3]]) / (2 * h))
+deriv_2.append((table[index[1]] - 2 * table[index[0]] + f(index[0] - h)) / (h * h))	#для первого узла считаем значение функции в -1 узле
+for i in range(8):
+	deriv.append((-3 * table[index[i + 2]] + 4 * table[index[i + 1]] - table[index[i]]) / (2 * h))
+	deriv_2.append((table[index[i + 2]] - 2 * table[index[i + 1]] + table[index[i]]) / (h * h))
+deriv_2.append((f(index[-1] + h) - 2 * table[index[-1]] + table[index[-2]]) / (h * h)) #для последнего узла считаем значение в m + 1 узле
+
+#выводим на печать табличку с производными
+for i in range(10):
+	print("| x = {} | f(x) = {} | f'(x)чд = {} | f'(x)т = {} | f'(x)т - f'(x)т = {} | f''(x)чд = {} | f''(x)т = {} | f''(x)т - f''(x)чд = {} |").format(index[i], table[index[i]], deriv[i], derivative_f(index[i]), derivative_f(index[i]) - deriv[i], deriv_2[i], derivative_f_2(index[i]), derivative_f_2(index[i]) - deriv_2[i]).decode('utf8')
+	print
