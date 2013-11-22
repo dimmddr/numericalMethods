@@ -34,8 +34,8 @@ args['m'] = int(args['m'])
 print "Введите n: ".decode( 'utf8' )
 args[ 'n' ] = int( raw_input() )
 
-while(args['n'] <= 0 or args['n'] > =args['m']):
-	print "n должно быть > 0 и меньше m = {}".format(args['m']).decode('utf8')
+while(args['n'] <= 0 or args['n'] >= args['m']):
+	print "n должно быть > 0 и < m = {}".format(args['m']).decode('utf8')
 	print "Введите n: ".decode( 'utf8' )
 	args[ 'n' ] = int( raw_input() )
 
@@ -82,8 +82,8 @@ def mult_middle(t, k):
 	return res / factorial(k + 1)
 Pn = 0
 #чтобы не считать лишнего будeм строить только нужный кусок таблицы конечных разностей
-if (args['x'] >= a_1 and args['x'] <= a_2):
 	#начало таблицы
+if (args['x'] >= a_1 and args['x'] <= a_2):
 	t = (args['x'] - index[0]) / h
 	fd = build_finite_difference(args[ 'n' ], [[table[key]] for key in index])
 	print_table(args['n'], fd)
@@ -91,8 +91,8 @@ if (args['x'] >= a_1 and args['x'] <= a_2):
 	for k in range(args['n'] - 1):
 		Pn = Pn + mult_minus(t, k) * fd[0][k + 1]
 	
-elif (args['x'] >= mid_1 and args['x'] <= mid_2):
 	#середина таблицы
+elif (args['x'] >= mid_1 and args['x'] <= mid_2):
 	i = -1
 	while(args['x'] < index[i]):
 		i = i - 1
@@ -100,11 +100,12 @@ elif (args['x'] >= mid_1 and args['x'] <= mid_2):
 	#Здесь пожалуй проще построить таблицу целиком, чем найти нужный ее кусок
 	fd = build_finite_difference(args['m'], [[table[key]] for key in index])
 	print_table(args['m'], fd)
+	if (args['n'] > 7): args[ 'n' ] = args[ 'n' ] - 2
 	Pn = fd[i][0]
 	for k in range(args['n'] - 1):
 		Pn = Pn + mult_middle(t, k) * fd[int(ceil((k + 1) / 2))][k + 1]
-else:
 	#конец таблицы
+else:
 	fd = build_finite_difference(args[ 'n' ], [[table[key]] for key in reversed(index)])
 	print_table(args['n'], fd)
 	t = (args['x'] - index[-1]) / h
