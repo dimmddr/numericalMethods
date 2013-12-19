@@ -20,23 +20,28 @@ def derivative_f_2(x):
 #красиво печатаем двумерный список
 def print_table(n, table):
 	for i in range(n):
-		print str(table[i])
+		print(str(table[i]))
 	
-#просим ввести n
-def get_n(m):
-	print "Введите n: ".decode( 'utf8' )
-	n = int( raw_input() )
+def tmp(arr, x, k, n):
+	a1 = a2 = 1
+	for i in range(n + 1):
+		if (i != k):
+			a1 = a1 * (arr[k] - arr[i])
+			a2 = a2 * (x - arr[i])
+	return a2 / a1
+	
+def lagrange(xi, fi, x, n):
+	if(x == xi[0]):
+		return fi[0]
+	sum = 0
+	for i in range(n + 1):
+		sum = sum + tmp(xi, x, i, n) * fi[i]
+	return sum
 
-	while(n <= 0 or n >= m):
-		print "n должно быть > 0 и меньше m = {}".format(m).decode('utf8')
-		print "Введите n: ".decode( 'utf8' )
-		n = int( raw_input() )
-	return n
-	
 #читаем параметры
-input = open( '4_task_input.txt', 'r' )
+input_file = open( '4_task_input.txt', 'r' )
 
-args = {line.split( ' = ' )[ 0 ]: float( line.split( ' = ' )[ 1 ].rstrip( '\n\r' ) ) for line in input}
+args = {line.split( ' = ' )[ 0 ]: float( line.split( ' = ' )[ 1 ].rstrip( '\n\r' ) ) for line in input_file}
 for key in args.keys(  ): print( str( key ) + ' = ' + str( args[ key ] ) )
 print
 
@@ -49,7 +54,13 @@ print
 #переводим m из float в integer
 args['m'] = int(args['m'])
 #считываем n
-args[ 'n' ] = get_n(args['m'])
+args[ 'n' ] = int(input('Введите n: '))
+
+while(args['n'] <= 0 or args['n'] >= args['m']):
+	print("n должно быть > 0 и < m = {}".format(args['m']))
+	print("Введите n: ")
+	args[ 'n' ] = int( input() )
+
 #args['n'] = 8
 #так как данная функция строго монотонна и непрерывна, то можно использовать первый способ обратной интерполяции
 #инвертируем таблицу
@@ -59,14 +70,14 @@ inv_index = sorted( inv_table.keys() )
 for key in inv_index: print( str( key ) + ' => ' + str( inv_table[ key ] ) )
 print
 #просим ввести х
-print "Введите х в интервале [{}, {}]".format( inv_index[0], inv_index[-1] ).decode( 'utf8' )
-x = float( raw_input() )
+print("Введите х в интервале [{}, {}]".format( inv_index[0], inv_index[-1] ))
+x = float( input() )
 #x = 2.35
 
 while(x < inv_index[0]  or x >  inv_index[-1] ):
-	print "x должно быть >= {} и <= {}".format( inv_table[ inv_index[0] ], inv_table[ inv_index[-1] ]).decode('utf8')
-	print "Введите x: ".decode( 'utf8' )
-	x = float( raw_input() )
+	print("x должно быть >= {} и <= {}".format( inv_index[0], inv_index[-1]))
+	print("Введите x: ")
+	x = float( input() )
 args[ 'x' ] = x
 
 #считаем результат с помощью метода Ньютона
@@ -84,71 +95,55 @@ for i in range( args[ 'n' ] + 1 ):
 	mult *= args[ 'x' ] - inv_index[ i ]
 
 #выводим результат
-print "Нахождение х = {} с помощью интeрполяции по Ньютону: ".format( args[ 'x' ] ).decode( 'utf8' )
-print "Pn({}) = {}".format( args[ 'x' ], newton )
-print "| f(x) - F | = " + str( abs( f(newton) - args[ 'x' ] ) )
-print
+print("Нахождение х = {} с помощью интeрполяции по Ньютону: ".format( args[ 'x' ] ))
+print("Pn({}) = {}".format( args[ 'x' ], newton ))
+print("| f(x) - F | = " + str( abs( f(newton) - args[ 'x' ] ) ) )
+print()
 
 #2 способ
 #считаем интерполяционный многочлен
 #считаем результат с помощью метода Ньютона
-dd = [ [ table[ index[ x ] ] ] for x in range( int( args[ 'n' ] + 1 ) ) ]
 n = args[ 'n' ]
-for j in range( args[ 'n' ] ):
-	for i in range( n ):
-		dd[ i ].append( ( dd[ i + 1 ][ j ] - dd[ i ][ j ] ) / ( index[ i + j + 1] - index[ i ] ) )
-	n -= 1
 
 b = args[ 'b' ]
 a = args[ 'a' ]
-step = 0
-eps = 0.0000001
+index_find = 0
+for i in range( len(index) - 1):
+	if (x >= inv_index[i] and x < inv_index[i + 1]):
+		index_find = i
+		break
 
-newton_a = 0
-mult = 1
-for i in range( args[ 'n' ] + 1 ):
-	newton_a += mult * dd[ 0 ][ i ]
-	mult *= a - index[ i ]
-
-newton_b = 0
-mult = 1
-for i in range( args[ 'n' ] + 1 ):
-	newton_b += mult * dd[ 0 ][ i ]
-	mult *= b - index[ i ]
-c = 0
-while abs((newton_a - newton_b) / 2 )> eps:
-	c = (a + b) / 2
-	step += 1
-	if f(a) * f(c) < 0:
-		b = c
+middle = (index[index_find] + index[index_find + 1]) / 2
+		
+def comparator( z ):
+	 return abs( middle - z )
+	 
+index.sort(key = comparator)
+val = [table[key] for key in index]
+	 
+#for i in range(len(index)):
+#	print("f({}) = {}".format(index[i], val[i]))
+	 
+eps = 1e-10
+l = index[0]
+r = index[1]
+x1 = (l + r) / 2
+x2 = r
+while(eps < abs(x1 - x2)):
+	mid = (l + r) / 2
+	x1 = x2
+	x2 = mid
+	if( 0 > (lagrange(index, val, mid, n) - x) * (lagrange(index, val, l, n) - x)):
+		r = mid
 	else:
-		a = c
-	
-	newton_a = 0
-	mult = 1
-	for i in range( args[ 'n' ] + 1 ):
-		newton_a += mult * dd[ 0 ][ i ]
-		mult *= a - index[ i ]
+		l = mid
 
-	newton_b = 0
-	mult = 1
-	for i in range( args[ 'n' ] + 1 ):
-		newton_b += mult * dd[ 0 ][ i ]
-		mult *= b - index[ i ]
-
-c = (a + b) / 2
-
-newton = 0
-mult = 1
-for i in range( args[ 'n' ] + 1 ):
-	newton += mult * dd[ 0 ][ i ]
-	mult *= c - index[ i ]
-
+lagr =  (l + r) / 2
 #выводим результат
-print "Обратная интерполяция, способ 2".decode( 'utf8' )
-print "Pn({}) ~ {}".format( c, args[ 'x' ] )
-print "| Pn(x) - F | = " + str( abs( newton - args[ 'x' ] ) )
-print
+print("Обратная интерполяция, способ 2")
+print("Pn({}) = {}".format( x, lagr ))
+print("| Pn(x) - F | = {}".format(abs( f(lagr) - x ) ))
+print()
 
 #считаем производную
 h = (args['b'] - args['a']) / args['m']
@@ -163,6 +158,6 @@ deriv.append((3 * table[index[-2]] - 4 * table[index[-3]] + table[index[-4]]) / 
 deriv.append((3 * table[index[-1]] - 4 * table[index[-2]] + table[index[-3]]) / (2 * h))
 #выводим на печать табличку с производными
 for i in range(10):
-	print("|  x  |    f'(x)чд    |  f'(x)т - f'(x)т |    f''(x)чд    | f''(x)т - f''(x)чд |").decode('utf8')
-	print("| {} | {} | {} | {} | {} |").format(index[i], deriv[i], abs(derivative_f(index[i]) - deriv[i]), deriv_2[i], abs(derivative_f_2(index[i]) - deriv_2[i])).decode('utf8')
+	print("|  x  |      f'(x)чд      |     f'(x)т - f'(x)т    |     f''(x)чд     |    f''(x)т - f''(x)чд    |")
+	print("| {} | {} | {} | {} | {} |".format(index[i], deriv[i], abs(derivative_f(index[i]) - deriv[i]), deriv_2[i], abs(derivative_f_2(index[i]) - deriv_2[i])))
 	print
