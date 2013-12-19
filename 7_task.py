@@ -117,6 +117,7 @@ print("Погрешность:")
 print("|J - Jkf| = {}".format(abs(J1 - Jkf_1)))
 print()
 
+#С весом Чебышева-Лаггера
 print("2й случай:")
 print("[a, b] = (0, +infinity)")
 print("w(x) = x^alfa * e^(-x)")
@@ -132,7 +133,7 @@ for x in roots2:
 	print("x = {}".format(x))
 	
 print("Коэффициенты квадратурной формулы:")
-mult = math.factorial(n) * math.gamma(n + alfa)#math.factorial(n + alfa - 1)
+mult = math.factorial(n) * math.gamma(n + alfa)
 A2 = []
 i = 0
 for x in roots2:
