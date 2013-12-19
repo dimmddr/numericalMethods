@@ -3,6 +3,7 @@
 from math import sqrt
 from math import ceil
 from math import factorial
+import math
 #from mpmath import *
 
 def f( x ): 
@@ -13,7 +14,7 @@ def x_j( j, a, b, m ):
 
 #красиво печатаем двумерный список
 def print_table(n, table):
-	for i in range(n):
+	for i in range(n + 1):
 		print(table[i])
 			
 #читаем параметры
@@ -57,8 +58,8 @@ while (args['x'] < a_1 or (args['x'] > a_2 and args['x'] < mid_1) or (args['x'] 
 	
 def build_finite_difference(n, table):
 	m = n - 1
-	for i in range(n) :
-		for j in range(m):
+	for i in range(n + 1) :
+		for j in range(m + 1):
 			table[j].append(table[j + 1][i] - table[j][i])
 		m = m - 1
 	return table
@@ -89,20 +90,16 @@ if (args['x'] >= a_1 and args['x'] <= a_2):
 	
 	#середина таблицы
 elif (args['x'] >= mid_1 and args['x'] <= mid_2):
-	i = -1
-	while(args['x'] < index[i]):
-		i = i - 1
-	
+	i = 0
+	while(args['x'] > index[i]):
+		i = i + 1
 	t = (args['x'] - index[i]) / h
-	
 	print_table(args['m'], fd)
 	Pn = fd[i][0]
 	mult = 1
-	tmp = [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
 	for k in range(args['n']):
-		mult = mult * (t + ((-1) ** k) * (k + 1) / 2)
-		Pn = Pn + mult * fd[i - int(ceil((k + 1) / 2))][k + 1] / factorial(k + 1)
-		#Pn = Pn + mult_middle(t, k) * fd[i - int(ceil((k + 1) / 2))][k + 1]
+		mult = mult * (t + math.pow(-1, k) * math.floor( (k + 1) / 2))
+		Pn = Pn + mult * fd[i - int(math.floor((k + 1) / 2))][k + 1] / factorial(k + 1)
 	#конец таблицы
 else:
 	t = (args['x'] - index[-1]) / h
