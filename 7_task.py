@@ -59,10 +59,12 @@ def der2(x):
 	return b1 * (b2 + b3)
 	
 def P2(x):
-	return math.pow(-1, n) * math.pow(x, -alfa) * math.pow(math.e, x) * der2(x)
+	#return math.pow(-1, n) * math.pow(x, -alfa) * math.pow(math.e, x) * der2(x)
+	return math.pow(x, 5) - 30 * math.pow(x, 4) + 300 * math.pow(x, 3) - 1200 * x * x + 1800 * x - 720
 	
 def P2_derivative(x):
-	return 4200 - 4200 * x + 1260 * x * x - 140 * math.pow(x, 3) + 5 * math.pow(x, 4)
+	#return 4200 - 4200 * x + 1260 * x * x - 140 * math.pow(x, 3) + 5 * math.pow(x, 4)
+	return 25 * (360 - 480 * x + 180 * x * x - 24 * x * x * x + x * x * x * x) * (360 - 480 * x + 180 * x * x - 24 * x * x * x + x * x * x * x)
 	
 def der3(x):
 	b1 = 480 * x
@@ -130,7 +132,7 @@ for x in roots2:
 	print("x = {}".format(x))
 	
 print("Коэффициенты квадратурной формулы:")
-mult = math.factorial(n) * math.factorial(n + alfa)
+mult = math.factorial(n) * math.gamma(n + alfa)#math.factorial(n + alfa - 1)
 A2 = []
 i = 0
 for x in roots2:
