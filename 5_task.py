@@ -40,11 +40,11 @@ b = math.pi / 2
 print("[a, b] = [{}, {}]".format(a, b))
 
 print("Введите количество промежутков в отрезке [a, b]")
-print("m = ", end="")
+print("m = ", end = "")
 m = int( input() )
 while (0 >= m):
 	print("m должно быть больше 0")
-	print("m = ", end="")
+	print("m = ", end = "")
 	m = int( input() )
 
 h = (b - a) / m

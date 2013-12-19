@@ -2,7 +2,7 @@
 
 import math
 
-alfa = 2
+alfa = 0
 
 n = 5
 	
@@ -80,7 +80,7 @@ print("Задание № 7: Классические ортогональные
 print("Уравнение Пирсона: 4 частных случая")
 print("f(x) = sin(3 * x)")
 
-print("1й случай:")
+print("1й случай: ")
 print("[a, b] = (-infinity, +infinity)")
 print("w(x) = e^(-x^2)")
 print()
@@ -102,13 +102,15 @@ for x in roots1:
 	print("A[{}] = {}".format(i, A1[-1]))
 	i = i + 1
 
+Jkf_1= 0
+for i in range(len(roots1)):
+	Jkf_1 = Jkf_1 + A1[i] * f(roots1[i])
+print("Вычисленное значение интеграла:")
+print("Jkf = {}".format(Jkf_1))
 J1 = 0
 print("Точное значение интеграла:")
 print("J = {}".format(J1))
 
-Jkf_1= 0
-for i in range(len(roots1)):
-	Jkf_1 = Jkf_1 + A1[i] * f(roots1[i])
 print("Погрешность:")
 print("|J - Jkf| = {}".format(abs(J1 - Jkf_1)))
 print()
@@ -136,13 +138,16 @@ for x in roots2:
 	print("A[{}] = {}".format(i, A2[-1]))
 	i = i + 1
 
+Jkf_2= 0
+for i in range(len(roots2)):
+	Jkf_2 = Jkf_2 + A2[i] * f(roots2[i])
+
+print("Вычисленное значение интеграла:")
+print("Jkf = {}".format(Jkf_2))
 J2 = -9 / 250
 print("Точное значение интеграла:")
 print("J = {}".format(J2))
 
-Jkf_2= 0
-for i in range(len(roots2)):
-	Jkf_2 = Jkf_2 + A2[i] * f(roots2[i])
 print("Погрешность:")
 print("|J - Jkf| = {}".format(abs(J2 - Jkf_2)))
 print()
@@ -152,7 +157,8 @@ print("[a, b] = (0, Pi)")
 print("w(x) = (x - a)^alfa * (b - x)^beta")
 print("alfa = beta = 0  => w(x) = 1")
 print()
-
+#полиномы Лежандра
+#квадратурная формула Гаусса
 a = -1 
 b = 1
 
@@ -169,16 +175,19 @@ for x in roots3:
 	print("A[{}] = {}".format(i, A3[-1]))
 	i = i + 1
 
-J3 = 2/3
-print("Точное значение интеграла:")
-print("J = {}".format(J3))
-
 Jkf_3= 0
 A = 0
 B = math.pi
 for i in range(len(roots3)):
 	Jkf_3 = Jkf_3 + A3[i] * f(roots3[i] * (B - A) / 2 + (B + A) / 2)
 Jkf_3 = Jkf_3 * (B - A) / 2
+
+print("Вычисленное значение интеграла:")
+print("Jkf = {}".format(Jkf_3))
+
+J3 = 2/3
+print("Точное значение интеграла:")
+print("J = {}".format(J3))
 print("Погрешность:")
 print("|J - Jkf| = {}".format(abs(J3 - Jkf_3)))
 print()
@@ -187,7 +196,8 @@ print("4й случай:")
 print("[a, b] = (-1, 1)")
 print("w(x) = 1 / sqrt(1 - x^2)")
 print()
-
+#полиномы Чебышева
+#квадратурная формула Мелера
 a = -1
 b = 1
 
@@ -195,15 +205,18 @@ roots4 = [math.cos(2 * i + 1) * math.pi / (2 * n) for i in range(n)]
 print("Узлы квадратурной формулы:")
 for x in roots4:
 	print("x = {}".format(x))
-	
-J4 = 0
-print("Точное значение интеграла:")
-print("J = {}".format(J4))
 
 Jkf_4= 0
 for i in range(len(roots4)):
 	Jkf_4 = Jkf_4 + f(roots4[i])
 Jkf_4 = Jkf_4 * math.pi / n
+	
+print("Вычисленное значение интеграла:")
+print("Jkf = {}".format(Jkf_4))
+
+J4 = 0
+print("Точное значение интеграла:")
+print("J = {}".format(J4))
 print("Погрешность:")
 print("|J - Jkf| = {}".format(abs(J4 - Jkf_4)))
 print()
