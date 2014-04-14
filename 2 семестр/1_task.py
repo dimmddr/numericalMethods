@@ -78,7 +78,9 @@ x0 = 0
 xn = 1
 n = 10
 h = (xn - x0) / n
+#O(h)
 #Можно было и не создавать нулевые массивы заранее, а добавлять элементы при их вычислении, но так очевиднее и ближе к записи алгоритма, а значит меньше вероятность ошибки
+print("O(h)")
 a = [0 for x in range(n + 1)]
 b = [0 for x in range(n + 1)]
 c = [0 for x in range(n + 1)]
@@ -96,9 +98,25 @@ for i in range(1, n):
 	b[i] = r(x) * h * h - 2 * p(x)
 	c[i] = p(x) + q(x) * h / 2
 	d[i] = f(x) * h * h
-#Проверим что правильно посчитали диагонали
-#print(a)
-#print(b)
-#print(c)
-#print(d)
+solveSLE(n, a, b, c, d)
+
+#O(h^2)
+print("O(h^2)")
+a = [0 for x in range(n + 1)]
+b = [0 for x in range(n + 1)]
+c = [0 for x in range(n + 1)]
+d = [0 for x in range(n + 1)]
+b[0] = alfa[0] * h - alfa[1]
+c[0] = alfa[1]
+b[n] = beta[0] * h + beta[1]
+a[n] = -beta[1]
+d[0] = 0	#A * h, A = 0
+d[n] = 0 	#B * h, B = 0
+x = x0 - h / 2
+for i in range(0, n):
+	x += h
+	a[i] =  p(x) - q(x) * h / 2
+	b[i] = r(x) * h * h - 2 * p(x)
+	c[i] = p(x) + q(x) * h / 2
+	d[i] = f(x) * h * h
 solveSLE(n, a, b, c, d)
