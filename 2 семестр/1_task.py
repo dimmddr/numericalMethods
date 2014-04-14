@@ -41,8 +41,7 @@ def solveSLE(n, a, b, c, d):
 		alfa.append(-c[i] / (a[i] * alfa[i] + b[i]))
 		beta.append((d[i] - a[i] * beta[i]) / (a[i] * alfa[i] + b[i]))
 	#Выводим на печать найденные коэффициенты
-	print()
-	print("Прогоночные коэффициенты:")
+	print("\nПрогоночные коэффициенты:")
 	for i in range(1, len(alfa)):
 		print("alfa[{0}] = {1},    beta[{0}] = {2}".format(i, alfa[i], beta[i]))
 
@@ -50,25 +49,31 @@ def solveSLE(n, a, b, c, d):
 	x[n] = (d[n] - a[n] * beta[n]) / (b[n] + a[n] * alfa[n])
 	for i in range(n - 1, -1, -1):
 		x[i] = alfa[i + 1] * x[i + 1] + beta[i + 1]
+	print("\nВектор неизвестных:")
 	print("x = {}".format(x))
 	return x
 
 #solveSLE(n, a, b, c, d)
 #задаем начальные условия
 def q(x):
-	return x + math.pow(math.e, -x)
+	#return x + math.pow(math.e, -x)
+	return 1 + 2 * x
 
 def r(x):
-	return x * x - x
+	return -math.log(1 + x)
+	#return x * x - x
 
 def f(x):
-	return x + 2
+	return x - 1
+	#return x + 2
 	
 def p(x):
 	return 1 #Ну так уж получилось, извините, такое условие
 
-alfa = [1.1, -1]
-beta = [0.5, 1]
+#alfa = [1.1, -1]
+alfa = [0.5, -1]
+#beta = [0.5, 1]
+beta = [0.7, 1]
 x0 = 0
 xn = 1
 n = 10

@@ -19,6 +19,15 @@ def matrix_print(matrix, ext = 1):	#ext - количество стобцов р
 			for ii in range(len(matrix[i]) - ext, len(matrix[i])):
 				print("{}\t".format(matrix[i][ii]), end='')
 		print()
+#норма матрицы
+def norm(matrix):
+	res = matrix[0][0]
+	for i in range(len(matrix)):
+		for ii in range(len(matrix)):
+			if matrix[i][ii] > res:
+				res = matrix[i][ii]
+	return res
+
 #Читаем исходные данные, первые строчки - матрица, последняя - правая часть
 input_file = open('3_task_input.txt', 'r')
 #Каждую линию нужно разбить на части по символу /t и каждый кусок превратить в float
@@ -30,7 +39,7 @@ n = len(A_ext)
 #Сохраним исходную матрицу для будущих поколений
 A_standart = []
 for i in range(n):
-	A_standart.append(list(A_ext[i])) #эталон по английски standart? Ну пусть так будет
+	A_standart.append(list(A_ext[i])) 	
 
 #1) Решаем СЛАУ обычным методом Гаусса (методом единственного деления)
 print("1) Решаем СЛАУ обычным методом Гаусса (методом единственного деления)")
@@ -84,4 +93,23 @@ for i in range(1, n):
 	M_temp = A_ext[i][i] + sum(A_ext, i)
 	if M_temp > M:
 		M = M_temp
-print("\nНайденные значения \nm = {}	M = {}".format(m, M))
+alfa = 2 / (m + M)
+print("\nНайденные значения \nm = {}	M = {}	alfa = {}".format(m, M, alfa))
+#Найдем B_alfa
+#Единичная матрица. Можно было и без нее, но так очевиднее
+E = [[0 for i in range(n)] for j in range(n)]
+for i in range(n):
+	E[i][i] = 1
+B_a = [[0 for i in range(n)] for j in range(n)]
+for i in range(n):
+	for ii in range(n):
+		B_a[i][ii] = E[i][ii] - alfa * A_ext[i][ii]
+#Найдем c_a
+c_a = []
+for i in range(n):
+	c_a.append(alfa * A_ext[i][-1])
+print("\nМатрица B alfa:")
+matrix_print(B_a, 0)
+print("\nВектор c alfa:")
+print(c_a)
+print("\n||B alfa|| = {}".format(norm(B_a)))
