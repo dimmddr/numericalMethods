@@ -102,18 +102,18 @@ solveSLE(n, a, b, c, d)
 
 #O(h^2)
 print("O(h^2)")
-a = [0 for x in range(n + 1)]
-b = [0 for x in range(n + 1)]
-c = [0 for x in range(n + 1)]
-d = [0 for x in range(n + 1)]
-b[0] = alfa[0] * h - alfa[1]
-c[0] = alfa[1]
-b[n] = beta[0] * h + beta[1]
-a[n] = -beta[1]
+a = [0 for x in range(n + 2)]
+b = [0 for x in range(n + 2)]
+c = [0 for x in range(n + 2)]
+d = [0 for x in range(n + 2)]
+b[0] = -alfa[0] * h - alfa[1] * 2
+c[0] = -alfa[1] * 2 + alfa[0] * h
+b[n] = -beta[0] * h - beta[1] * 2
+a[n] = -beta[1] * 2 + beta[0] * h
 d[0] = 0	#A * h, A = 0
 d[n] = 0 	#B * h, B = 0
 x = x0 - h / 2
-for i in range(0, n):
+for i in range(1, n + 1):
 	x += h
 	a[i] =  p(x) - q(x) * h / 2
 	b[i] = r(x) * h * h - 2 * p(x)
