@@ -19,15 +19,21 @@ def matrix_print(matrix, ext = 1):	#ext - количество стобцов р
 			for ii in range(len(matrix[i]) - ext, len(matrix[i])):
 				print("{}\t".format(matrix[i][ii]), end='')
 		print()
-#норма матрицы
+#норма матрицы, матрица должна быть двухмерной
 def norm(matrix):
 	res = matrix[0][0]
 	for i in range(len(matrix)):
-		for ii in range(len(matrix)):
+		for ii in range(len(matrix[i])):
 			if matrix[i][ii] > res:
 				res = matrix[i][ii]
 	return res
 
+def aprior(norm_x, norm_B, k):
+	res = norm_x * (norm_B ** k) / (1 - norm_B)
+	return res
+	
+#Установим точность
+eps = 1E-7
 #Читаем исходные данные, первые строчки - матрица, последняя - правая часть
 input_file = open('3_task_input.txt', 'r')
 #Каждую линию нужно разбить на части по символу /t и каждый кусок превратить в float
@@ -40,7 +46,7 @@ n = len(A_ext)
 A_standart = []
 for i in range(n):
 	A_standart.append(list(A_ext[i])) 	
-
+	
 #1) Решаем СЛАУ обычным методом Гаусса (методом единственного деления)
 print("1) Решаем СЛАУ обычным методом Гаусса (методом единственного деления)")
 E = [[0 for i in range(n)] for i in range(n)]
@@ -50,8 +56,8 @@ for i in range(1, n):
 		for j in range(i, n):
 			k = A_ext[j][i - 1] / A_ext[i - 1][i - 1]
 			A_ext[j] = [A_ext[j][ii] - A_ext[i - 1][ii] * k for ii in range(len(A_ext[j]))]
-print("\nПолучившаяся диагональная матрица:")
-matrix_print(A_ext)
+#print("\nПолучившаяся диагональная матрица:")
+#matrix_print(A_ext)
 #обратный ход
 x = [0 for i in range(n)]
 for i in range(n - 1, -1, -1):
@@ -110,6 +116,69 @@ for i in range(n):
 	c_a.append(alfa * A_ext[i][-1])
 print("\nМатрица B alfa:")
 matrix_print(B_a, 0)
-print("\nВектор c alfa:")
-print(c_a)
+print("\nВектор c alfa = {}".format(c_a))
 print("\n||B alfa|| = {}".format(norm(B_a)))
+#Составим матрицу D
+D = [[0 for i in range(n)] for j in range(n)]
+for i in range(n):
+	D[i][i] = A_standart[i][i]
+#Составим D^-1
+D_inv = [[0 for i in range(n)] for j in range(n)]
+for i in range(n):
+	D_inv[i][i] = 1 / D[i][i]
+#Теперь найдем Bd = E - D^(-1) * A
+Bd = [[0 for i in range(n)] for j in range(n)]
+for i in range(n):
+	for ii in range(n):
+		Bd[i][ii] = E[i][ii] - A_ext[i][ii] * D_inv[ii][ii]
+print("\nМатрица B_d:")
+matrix_print(Bd, 0)
+#Найдем c_D
+c_D = [A_ext[i][-1] * D_inv[i][i] for i in range(n)]
+print("\nВектор c_D = {}".format(c_D))
+norm_Bd = norm(Bd)
+print("\n||B_d|| = {}".format(norm_Bd))
+#Очевидно, что норма B_d меньше, так что используем ее
+#найдем априорную оценку k
+k_apr = 1
+x0 = [0 for i in range(n)]
+#???
+#k_apr = math.sqrt(M / m) * math.log(2 / 3)
+#print(k_apr)
+b = []
+for i in range(n):
+	b.append(A_ext[i].pop())
+#print("b = {}".format(b))
+b = np.array(b)
+x0 = np.array(x0)
+c_D = np.array(c_D)
+Bd = np.matrix(Bd)
+x1 = np.dot(Bd, x0) - c_D
+A_ext = np.matrix(A_ext)
+E = np.matrix(E)
+#x_print = np.squeeze(np.asarray(x1))
+#print(x_print)
+#x_diff = np.squeeze(np.asarray(x1 - x0))
+norm_x = abs(np.max(x0 - x1))
+apr = aprior(norm_x, norm_Bd, k_apr)
+while(abs(apr) > eps):
+	k_apr += 1
+	apr = aprior(norm_x, norm_Bd, k_apr)
+print("Априорное k = {}".format(k_apr))
+#Возьмем k = 5 например
+k = 150
+teta = [(2 / ((M + m) - (M - m) * math.cos((2 * j - 1) * math.pi / (2 * k + 2)))) for j in range(1, k + 1)]
+#print("teta = {}".format(teta))
+teta.insert(0, 0)
+x_k = x0
+x_k_next = x1
+x0 = x1
+k_iter = 0
+while(abs(np.max(x_k - x_k_next)) > eps and k_iter < k):	
+	k_iter += 1
+	x_k = x_k_next
+	#print(k_iter)
+	Bd = E - teta[k_iter] * A_ext
+	c_D = teta[k_iter] * b
+	x_k_next = np.dot(x_k, Bd) +  c_D
+print(k_iter)

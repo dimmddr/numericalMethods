@@ -57,23 +57,31 @@ def solveSLE(n, a, b, c, d):
 #задаем начальные условия
 def q(x):
 	#return x + math.pow(math.e, -x)
-	return 1 + 2 * x
+	#return 1 + 2 * x
+	return -(x * x + 0.1)
 
 def r(x):
-	return -math.log(1 + x)
+	#return -math.log(1 + x)
 	#return x * x - x
+	return - 2 * x 
 
 def f(x):
-	return x - 1
+	# return x - 1
 	#return x + 2
+	return 2 * (3 * x * x - 0.1) / (x * x + 0.1) ** 3
 	
 def p(x):
 	return 1 #Ну так уж получилось, извините, такое условие
 
+def y(x):
+	return 1 / (x * x + 0.1)
+
 #alfa = [1.1, -1]
-alfa = [0.5, -1]
+#alfa = [0.5, -1]
+alfa = [1, -2]
 #beta = [0.5, 1]
-beta = [0.7, 1]
+# beta = [0.7, 1]
+beta = [1, 0]
 x0 = 0
 xn = 1
 n = 10
@@ -110,13 +118,16 @@ b[0] = -alfa[0] * h - alfa[1] * 2
 c[0] = -alfa[1] * 2 + alfa[0] * h
 b[n] = -beta[0] * h - beta[1] * 2
 a[n] = -beta[1] * 2 + beta[0] * h
-d[0] = 0	#A * h, A = 0
-d[n] = 0 	#B * h, B = 0
+d[0] =  h / 0.1	#A * h, A = 0
+d[n] =  h / (1 + 0.1) 	#B * h, B = 0
 x = x0 - h / 2
+y_x = [y(x)]
 for i in range(1, n + 1):
 	x += h
+	y_x.append(y(x))
 	a[i] =  p(x) - q(x) * h / 2
 	b[i] = r(x) * h * h - 2 * p(x)
 	c[i] = p(x) + q(x) * h / 2
 	d[i] = f(x) * h * h
 solveSLE(n, a, b, c, d)
+print(y_x)
