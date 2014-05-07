@@ -35,8 +35,8 @@ def solveSLE(n, a, b, c, d):
 	#Находим прогоночные коэффициенты
 	alfa = [0]
 	beta = [0]
-	alfa.append(-c[0] / b[0])
-	beta.append(d[0] / b[0])
+	alfa.append(c[0] / b[0])
+	beta.append(-d[0] / b[0])
 	for i in range(1, n + 1):
 		alfa.append(-c[i] / (a[i] * alfa[i] + b[i]))
 		beta.append((d[i] - a[i] * beta[i]) / (a[i] * alfa[i] + b[i]))
@@ -46,11 +46,13 @@ def solveSLE(n, a, b, c, d):
 		print("alfa[{0}] = {1},    beta[{0}] = {2}".format(i, alfa[i], beta[i]))
 
 	#Ищем вектор неизвестных и выводим его на печать
-	x[n] = (d[n] - a[n] * beta[n]) / (b[n] + a[n] * alfa[n])
+	# x[n] = (d[n] - a[n] * beta[n]) / (b[n] + a[n] * alfa[n])
+	x[n] = d[n]#(d[n] - a[n] * beta[n]) / (b[n] + a[n] * alfa[n])
 	for i in range(n - 1, -1, -1):
 		x[i] = alfa[i + 1] * x[i + 1] + beta[i + 1]
+		# x[i] = alfa[i + 1] * x[i + 1] + beta[i + 1]
 	print("\nВектор неизвестных:")
-	print("x = {}".format(x))
+	#print("x = {}".format(x))
 	return x
 
 #solveSLE(n, a, b, c, d)
@@ -88,7 +90,7 @@ n = 10
 h = (xn - x0) / n
 #O(h)
 #Можно было и не создавать нулевые массивы заранее, а добавлять элементы при их вычислении, но так очевиднее и ближе к записи алгоритма, а значит меньше вероятность ошибки
-print("O(h)")
+#print("O(h)")
 a = [0 for x in range(n + 1)]
 b = [0 for x in range(n + 1)]
 c = [0 for x in range(n + 1)]
@@ -106,7 +108,7 @@ for i in range(1, n):
 	b[i] = r(x) * h * h - 2 * p(x)
 	c[i] = p(x) + q(x) * h / 2
 	d[i] = f(x) * h * h
-solveSLE(n, a, b, c, d)
+#solveSLE(n, a, b, c, d)
 
 #O(h^2)
 print("O(h^2)")
@@ -116,18 +118,21 @@ c = [0 for x in range(n + 2)]
 d = [0 for x in range(n + 2)]
 b[0] = -alfa[0] * h - alfa[1] * 2
 c[0] = -alfa[1] * 2 + alfa[0] * h
-b[n] = -beta[0] * h - beta[1] * 2
-a[n] = -beta[1] * 2 + beta[0] * h
-d[0] =  h / 0.1	#A * h, A = 0
-d[n] =  h / (1 + 0.1) 	#B * h, B = 0
+b[n + 1] = -beta[0] * h - beta[1] * 2
+a[n + 1] = -beta[1] * 2 + beta[0] * h
+d[0] =  2 * h * 10	#A * h, A = 0
+d[n + 1] =  2 * h / (1 + 0.1) 	#B * h, B = 0
 x = x0 - h / 2
 y_x = [y(x)]
-for i in range(1, n + 1):
+for i in range(1, n + 2):
 	x += h
 	y_x.append(y(x))
 	a[i] =  p(x) - q(x) * h / 2
 	b[i] = r(x) * h * h - 2 * p(x)
 	c[i] = p(x) + q(x) * h / 2
 	d[i] = f(x) * h * h
-solveSLE(n, a, b, c, d)
-print(y_x)
+y_calc = solveSLE(n + 1, a, b, c, d)
+for i in range(n + 2):
+	print("{}	<->	{}".format(y_x[i], y_calc[i]))
+# print("x(n) = {}".format(x))
+# print("{} <-> {}".format(len(y_x), len(y_calc)))
