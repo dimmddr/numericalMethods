@@ -81,8 +81,14 @@ def norm_inf(A):
 def norm_1(A):
 	res = 0
 	for i in range(len(A)):
-		for ii in range(len(A[i])):
-			res += abs(A[i][ii])
+		res += abs(A[i][0])
+	if(len(A[0])) > 1:
+		for ii in range(1, len(A)):
+			sum = 0
+			for i in range(len(A)):
+				sum += abs(A[i][ii])
+			if sum > res:
+				res = sum
 	return res
 	
 def norm_2(A):
@@ -140,8 +146,8 @@ for i in range(N):
 print("Для возмущенной системы:\nx = {}".format(x_delta))
 print("Вектор невязки = {}".format(discrepancy_new))
 #3) Найдем фактическую относительную погрешшность
-sigma = v_norm_1([x_delta[i] - x[i] for i in range(N)]) / v_norm_1(x)
-print("Фактическая теоретическая погрешность = {}".format(sigma))
+sigma = v_norm_inf([x_delta[i] - x[i] for i in range(N)]) / v_norm_inf(x)
+print("Фактическая относительную погрешность = {}".format(sigma))
 #4) Вычислим число обусловленности
 mA = np.matrix(A_ext)
 A_inv = np.linalg.inv(mA)
@@ -149,5 +155,10 @@ A_inv = np.squeeze(np.asarray(A_inv))
 condition = norm_1(A_ext) * norm_1(A_inv)
 print("Число обусловленности = {}".format(condition))
 #5) Найдем теоретическую относительную погрешность
-sigma_b = norm_1(delta_b) / 	norm_1(b)
+delta = 0
+norm_b = 0
+for i in range(len(delta_b)):
+	delta += abs(delta_b[i][0])
+	norm_b += abs(b[i][0])
+sigma_b = delta/ norm_b
 print("Теоретическая относительная погрешность = {}".format(sigma_b * condition))

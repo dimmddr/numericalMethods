@@ -20,12 +20,30 @@ def matrix_print(matrix, ext = 1):	#ext - количество стобцов р
 				print("{}\t".format(matrix[i][ii]), end='')
 		print()
 #норма матрицы, матрица должна быть двухмерной
-def norm(matrix):
-	res = matrix[0][0]
+def norm_1(matrix):
+	res = 0
 	for i in range(len(matrix)):
 		for ii in range(len(matrix[i])):
-			if matrix[i][ii] > res:
-				res = matrix[i][ii]
+			res += abs(matrix[i][ii])
+	return res
+
+def norm_2(A):
+	res = 0
+	for i in range(len(A)):
+		for ii in range(len(A[i])):
+			res += abs(A[i][ii]) ** 2
+	return math.sqrt(res)
+	
+def norm_inf(A):
+	res = 0
+	for i in range(len(A[0])):
+		res += abs(A[0][i])
+	for i in range(len(A)):
+		sum = 0
+		for ii in range(len(A[i])):
+			sum += abs(A[i][ii])
+		if sum > res:
+			res = sum
 	return res
 
 def aprior(norm_x, norm_B, k):
@@ -56,8 +74,6 @@ for i in range(1, n):
 		for j in range(i, n):
 			k = A_ext[j][i - 1] / A_ext[i - 1][i - 1]
 			A_ext[j] = [A_ext[j][ii] - A_ext[i - 1][ii] * k for ii in range(len(A_ext[j]))]
-#print("\nПолучившаяся диагональная матрица:")
-#matrix_print(A_ext)
 #обратный ход
 x = [0 for i in range(n)]
 for i in range(n - 1, -1, -1):
@@ -117,7 +133,7 @@ for i in range(n):
 print("\nМатрица B alfa:")
 matrix_print(B_a, 0)
 print("\nВектор c alfa = {}".format(c_a))
-print("\n||B alfa|| = {}".format(norm(B_a)))
+print("\n||B alfa|| = {}".format(norm_inf(B_a)))
 #Составим матрицу D
 D = [[0 for i in range(n)] for j in range(n)]
 for i in range(n):
@@ -136,15 +152,12 @@ matrix_print(Bd, 0)
 #Найдем c_D
 c_D = [A_ext[i][-1] * D_inv[i][i] for i in range(n)]
 print("\nВектор c_D = {}".format(c_D))
-norm_Bd = norm(Bd)
+norm_Bd = norm_inf(Bd)
 print("\n||B_d|| = {}".format(norm_Bd))
 #Очевидно, что норма B_d меньше, так что используем ее
 #найдем априорную оценку k
 k_apr = 1
 x0 = [0 for i in range(n)]
-#???
-#k_apr = math.sqrt(M / m) * math.log(2 / 3)
-#print(k_apr)
 b = []
 for i in range(n):
 	b.append(A_ext[i].pop())
@@ -156,6 +169,7 @@ Bd = np.matrix(Bd)
 x1 = np.dot(Bd, x0) - c_D
 A_ext = np.matrix(A_ext)
 E = np.matrix(E)
+x_np = np.array(x)
 #x_print = np.squeeze(np.asarray(x1))
 #print(x_print)
 #x_diff = np.squeeze(np.asarray(x1 - x0))
@@ -174,11 +188,16 @@ x_k = x0
 x_k_next = x1
 x0 = x1
 k_iter = 0
+norm = norm_Bd / (1 - norm_Bd)
 while(abs(np.max(x_k - x_k_next)) > eps and k_iter < k):	
 	k_iter += 1
 	x_k = x_k_next
-	#print(k_iter)
 	Bd = E - teta[k_iter] * A_ext
 	c_D = teta[k_iter] * b
 	x_k_next = np.dot(x_k, Bd) +  c_D
-print(k_iter)
+	print("{0}:\n\tx[{0}] = {1}\n\tx[{0}] - x0 = {2}".format(k_iter, np.squeeze(np.asarray(x_k)), abs(x_np - x_k)))
+	norm_x_k = abs(np.max(x_k_next - x_k))
+	print("\tАпостериорная оценка: {}".format(norm_x_k * norm))
+	print("\tАприорная оценка: {}".format(aprior(norm_x, norm_Bd, k_iter)))
+# print(k_iter)
+# x_print = np.squeeze(np.asarray(x_k))
