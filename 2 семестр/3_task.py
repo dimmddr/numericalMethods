@@ -179,11 +179,7 @@ while(abs(apr) > eps):
 	k_apr += 1
 	apr = aprior(norm_x, norm_Bd, k_apr)
 print("Априорное k = {}".format(k_apr))
-#Возьмем k = 5 например
 k = 150
-teta = [(2 / ((M + m) - (M - m) * math.cos((2 * j - 1) * math.pi / (2 * k + 2)))) for j in range(1, k + 1)]
-#print("teta = {}".format(teta))
-teta.insert(0, 0)
 x_k = x0
 x_k_next = x1
 x0 = x1
@@ -192,10 +188,8 @@ norm = norm_Bd / (1 - norm_Bd)
 while(abs(np.max(x_k - x_k_next)) > eps and k_iter < k):	
 	k_iter += 1
 	x_k = x_k_next
-	Bd = E - teta[k_iter] * A_ext
-	c_D = teta[k_iter] * b
 	x_k_next = np.dot(x_k, Bd) +  c_D
-	print("{0}:\n\tx[{0}] = {1}\n\tx[{0}] - x0 = {2}".format(k_iter, np.squeeze(np.asarray(x_k)), abs(x_np - x_k)))
+	print("{0}:\n\tx[{0}] = {1}\n\tx[{0}] - x = {2}".format(k_iter, np.squeeze(np.asarray(x_k)), abs(x_np - x_k)))
 	norm_x_k = abs(np.max(x_k_next - x_k))
 	print("\tАпостериорная оценка: {}".format(norm_x_k * norm))
 	print("\tАприорная оценка: {}".format(aprior(norm_x, norm_Bd, k_iter)))
