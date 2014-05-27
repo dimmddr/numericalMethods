@@ -37,13 +37,15 @@ def norm_2(A):
 def norm_inf(A):
 	res = 0
 	for i in range(len(A[0])):
-		res += abs(A[0][i])
+		# res += abs(A[0][i])
+		res += A[0][i]
+	res = abs(res)
 	for i in range(len(A)):
 		sum = 0
 		for ii in range(len(A[i])):
 			sum += abs(A[i][ii])
-		if sum > res:
-			res = sum
+		if abs(sum) > res:
+			res = abs(sum)
 	return res
 
 def aprior(norm_x, norm_B, k):
@@ -183,15 +185,29 @@ k = 150
 x_k = x0
 x_k_next = x1
 x0 = x1
-k_iter = 0
+k_iter = 1
 norm = norm_Bd / (1 - norm_Bd)
-while(abs(np.max(x_k - x_k_next)) > eps and k_iter < k):	
+c = 2
+print("{0}:\n\tx[{0}] = {1}\n\t||x[{0}] - x|| = {2}".format(k_iter, np.squeeze(np.asarray(x_k)), np.max(abs(x_np - x_k))))
+norm_x_k = np.max(abs(x_k_next - x_k))
+print("\tАпостериорная оценка: {}".format(norm_x_k * norm))
+print("\tАприорная оценка: {}".format(aprior(norm_x, norm_Bd, k_iter)))
+
+while(np.max(abs(x_k - x_k_next)) > eps and k_iter < k):	
 	k_iter += 1
 	x_k = x_k_next
 	x_k_next = np.dot(x_k, Bd) +  c_D
-	print("{0}:\n\tx[{0}] = {1}\n\tx[{0}] - x = {2}".format(k_iter, np.squeeze(np.asarray(x_k)), abs(x_np - x_k)))
-	norm_x_k = abs(np.max(x_k_next - x_k))
+	print("{0}:\n\tx[{0}] = {1}\n\t||x[{0}] - x|| = {2}".format(k_iter, np.squeeze(np.asarray(x_k)), np.max(abs(x_np - x_k))/c))
+	norm_x_k = np.max(abs(x_k_next - x_k))
+	# print("{} = {}".format(norm_x_k, x_k_next - x_k))
 	print("\tАпостериорная оценка: {}".format(norm_x_k * norm))
 	print("\tАприорная оценка: {}".format(aprior(norm_x, norm_Bd, k_iter)))
+
 # print(k_iter)
-# x_print = np.squeeze(np.asarray(x_k))
+x = np.squeeze(np.asarray(x_k_next))
+print("Вектор невязки:")
+for i in range(len(A_standart)):
+	sum = -A_standart[i][-1]
+	for ii in range(len(A_standart)):
+		sum += A_standart[i][ii] * x[ii]
+	print(sum)
